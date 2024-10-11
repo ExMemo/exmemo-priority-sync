@@ -52,3 +52,6 @@ Click the bookmark sync extension, then click the sync button and wait for the b
 - Distinguish between to-read and favorites when users add new bookmarks. Favorites are generally considered more important and have a higher priority than to-read.
 - Add a toggle in the settings to choose whether to sync bookmark content.
 - Support different browsers.
+
+## License
+This project is licensed under the terms of the GNU Lesser General Public License v3.0. See the [LICENSE](./LICENSE) file for details.
