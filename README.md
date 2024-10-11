@@ -48,6 +48,7 @@ Restart the Chrome browser to apply the changes.
 
 Click the bookmark sync extension, then click the sync button and wait for the bookmarks to be synchronized to the database.
 
-## 待做
-- 用户添加新书签时，区分待看和收藏。通常收藏被认为是更为重要的信息，优先级高于待看。
-- 从配置项中设置开关，选择是否同步书签内容。
+## To-Do
+- Distinguish between to-read and favorites when users add new bookmarks. Favorites are generally considered more important and have a higher priority than to-read.
+- Add a toggle in the settings to choose whether to sync bookmark content.
+- Support different browsers.
