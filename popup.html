@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><span id="appName"></span></title>
+    <style>
+        body {
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <h1><span id="appName"></span></h1>
+
+    <label for="bookmarkSelect"><span id="bookmarkLabel"></span></label>
+    <select id="bookmarkSelect">
+        <option value="watch-later" id="watchLater" selected></option>
+        <option value="collect" id="collect_text"></option>   
+    </select>
+    <button id="bookmarkButton"><span id="confirmButton"></span></button>
+    <br>
+    </br>
+    <button id="syncButton"></button>
+    <script src="popup.js"></script>
+</body>
+</html>
