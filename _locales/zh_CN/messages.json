@@ -28,5 +28,17 @@
     },
     "closeButton": {
         "message": "关闭"
+    },
+    "confirmButton": {
+        "message": "确认"
+    },
+    "bookmarkLabel": {
+        "message": "书签类型:"
+    },
+    "collect_text": {
+        "message": "收藏"
+    },
+    "watchLater": {
+        "message": "待看"
     }
 }

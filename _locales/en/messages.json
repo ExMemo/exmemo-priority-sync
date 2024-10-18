@@ -27,6 +27,18 @@
         "message": "Settings Saved"
     },
     "closeButton": {
-        "message": "关闭"
+        "message": "Close"
+    },
+    "confirmButton": {
+        "message": "Confirm"
+    },
+    "bookmarkLabel": {
+        "message": "Bookmark Type:"
+    },
+    "collect_text": {
+        "message": "Collect"
+    },
+    "watchLater": {
+        "message": "Watch Later"
     }
 }

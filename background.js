@@ -19,7 +19,7 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
     }
 });
 
-function syncBookmarks() {
+function syncBookmarks(type = 'watchLater') {
     if (isFirstInstall) {
         console.log('Skipping sync on first install');
         return;
@@ -29,11 +29,11 @@ function syncBookmarks() {
     showNotification(title, message, true);
     chrome.bookmarks.getTree((bookmarkTreeNodes) => {
         console.log(bookmarkTreeNodes);   
-        sendBookmarksToServer(bookmarkTreeNodes);
+        sendBookmarksToServer(bookmarkTreeNodes, type);
     });
 } // Get the bookmark tree and call the function to send bookmarks to the server
 
-function convertBookmarksToArray(bookmarksTree, parentPath = '') {
+function convertBookmarksToArray(bookmarksTree, parentPath = '', type = 'watchLater') {
     if (!bookmarksTree) {
         console.error('bookmarksTree is undefined');
         return [];
@@ -50,11 +50,12 @@ function convertBookmarksToArray(bookmarksTree, parentPath = '') {
                 title: bookmark.title,
                 url: bookmark.url,
                 add_date: addDate,
-                path: currentPath
+                path: currentPath,
+                type: type
             });
         } else if (bookmark.children) {
             // Process child bookmarks recursively
-            bookmarksArray.push(...convertBookmarksToArray(bookmark.children, currentPath));
+            bookmarksArray.push(...convertBookmarksToArray(bookmark.children, currentPath, type));
         }
     });
     return bookmarksArray;
@@ -90,7 +91,7 @@ function getToken(addr, username, password) {
 let bookmarksToSyncCount = 0;
 let bookmarksSyncedCount = 0;
 
-function sendBookmarksToServer(bookmarks) {
+function sendBookmarksToServer(bookmarks, type = 'watchLater') {
     bookmarksToSyncCount = bookmarks.length;
     bookmarksSyncedCount = 0;
 
@@ -100,10 +101,10 @@ function sendBookmarksToServer(bookmarks) {
         const password = items.password || 'guest'; 
         getToken(addr, username, password)
         .then(token => {
-            const bookmarksArray = convertBookmarksToArray(bookmarks);
+            const bookmarksArray = convertBookmarksToArray(bookmarks, '', type);
             const Token = 'Token ' + token;
 
-            console.log('Sending bookmarks to server:', JSON.stringify(bookmarksArray, null, 2)); // 打印发送服务器前的书签
+            console.log('Sending bookmarks to server:', JSON.stringify(bookmarksArray, null, 2));
             
             return fetch(`${addr}/api/bookmarks/`, {
                 method: 'POST',
@@ -172,9 +173,13 @@ function showNotification(title, message, autoClose = false) {
 }
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    if (request.action === "syncBookmarks") {
-        syncBookmarks();
-        sendResponse({ status: "Sync initiated" });
+    let response = {};
+
+    if (request.action === "syncBookmarks" || request.action === "addType") {
+        const bookmarkType = request.type || chrome.i18n.getMessage("watchLater");
+        syncBookmarks(bookmarkType);
+        sendResponse = "Sync initiated";
+        response.bookmarkType = bookmarkType;
     }
 });
 

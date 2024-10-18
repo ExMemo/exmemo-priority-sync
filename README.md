@@ -1,57 +1,49 @@
 English | [中文简体](./README_cn.md)
 
-# ExMemo Chrome Extension
-An extension for synchronizing Google Chrome bookmarks.
+## 1. Introduction
 
-## Features
+The [ExMemo](https://github.com/ExMemo/exmemo.git) is a personal knowledge management project designed to centrally record and manage various types of information, including favorite texts, books, music, videos, web pages, work documents, as well as reflections and thoughts about life. By systematically integrating these elements, it aims to break through cognitive limitations and discover internal connections.
 
-Synchronization triggers: User manually clicks the extension's "Sync" button, or automatically syncs when bookmarks are created, deleted, modified, or moved.
+![](./images/img1.png)
 
-- Synchronize bookmark list to the database, only adding the latest bookmarks during each sync
-- Mark broken links
+The system consists of a database, backend, and multiple front-ends. Distributed storage and databases are used to store user files, text, and corresponding vector data. Data storage can be deployed locally to protect user privacy. The backend provides general interfaces for data creation, reading, updating, and deletion (CRUD) operations and is responsible for invoking large models and processing data. The system supports mainstream online large models like OpenAI, Gemini, Qwen as well as offline models like Ollama. Multiple front-ends are available in the form of web services, WeChat bots, Obsidian plugins, and browser extensions for users to upload and download data.
 
-## Integration with the ExMemo Project (Important)
+![](./images/img2.png)
 
-ExMemo is a personal knowledge management project aimed at unifying data storage, integrating information, and expanding cognitive capabilities. ExMemo chrome extension is a branch of the [ExMemo project](https://github.com/ExMemo/exmemo.git) and requires communication with the backend of the ExMemo project to store bookmark information. It also uses the project's frontend to support data retrieval and search across multiple platforms.
+`bookmarks-sync` is a Chrome extension based on ExMemo designed to sync browser bookmarks to the database.
 
-**Deploying the ExMemo Service**
+## 2. Key Features
 
-Please refer to the project's [README.md](https://github.com/ExMemo/exmemo/blob/master/README.md) for setup and running instructions. The detailed steps are as follows:
-- 2.1 Environment
-- 2.2.1 Build Backend Image
-- 2.2.2 Build Frontend Image
-- 2.3.1 Start in Production Mode
+- **Sync Mechanism**: Users can manually click the "Sync" button or have the sync automatically triggered when bookmarks change.
+- **Bookmark Management**: Supports setting bookmarks as "To-Read" or "Favorite," with favorites representing more important entries.
+- **Link Detection**: Automatically identifies broken links and marks them in the database.
+- **Incremental Sync**: Processes only data changes during each sync to improve efficiency.
 
-## Installation and Setup
+## 3. Installation and Setup
 
-### Installation
+### 3.1 Installation
+
 1. Clone or download this repository.
-2. Open Google Chrome and go to the extensions management page (enter `chrome://extensions/` in the address bar).
-3. Enable "Developer mode" in the top right corner.
-4. Click the "Load unpacked" button and select the `chrome_bm` folder.
+2. Open Google Chrome and go to the Extensions Manager (type `chrome://extensions/` in the address bar).
+3. Toggle the "Developer mode" switch in the upper right corner.
+4. Click "Load unpacked" and select the `bookmarks-sync` folder to install.
 
-### Setup
-1. During the initial installation, enter the server address (`addr`), username, and password as prompted by the configuration page.
-2. Switch Languages (Optional)
-Language switch control: **Check and change the browser's language settings in Chrome**
+### 3.2 Initial Setup
 
-- Open the Chrome browser.
-- Click the three-dot icon (menu button) in the upper right corner.
-- Select "Settings" from the menu.
-- Enter "Language" in the search box. For example, to set English:
-  - Click "Add languages," then select "English" in the dialog that appears, and click "Add."
-  - Drag English to the top of the list, or click the three-dot icon on the right and select "Move to the top."
-  - Ensure the ** "Display Google Chrome in this language" ** option is checked.
-Restart the Chrome browser to apply the changes.
+Upon the first installation, input the server address (`addr`), username, and password as prompted by the configuration page.  
+Restart Google Chrome to apply changes.
 
-## Usage
+## 4. Usage
 
-Click the bookmark sync extension, then click the sync button and wait for the bookmarks to be synchronized to the database.
+- **First Manual Sync**: A manual sync needs to be triggered when using the extension for the first time.
+- **Automatic Sync**: Subsequent changes will automatically sync.
+- **Bookmark Categorization**: Tag bookmarks with types like "To-Read" or "Favorite."
 
-## To-Do
-- Distinguish between to-read and favorites when users add new bookmarks. Favorites are generally considered more important and have a higher priority than to-read.
-- Add a toggle in the settings to choose whether to sync bookmark content.
-- Support different browsers.
+## 5. To-Do
 
-## License
-This project is licensed under the terms of the GNU Lesser General Public License v3.0. See the [LICENSE](./LICENSE) file for details.
+- Add configuration options to toggle bookmark content syncing.
+- Make compatible with more browsers.
+
+## 6. License
+
+This project is licensed under the terms of the GNU Lesser General Public License v3.0. For more details, please see the [LICENSE](./LICENSE) file.
