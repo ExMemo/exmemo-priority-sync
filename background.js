@@ -145,7 +145,11 @@ function showNotification(title, message, autoClose = false) {
             iconUrl: 'images/icon-48.png',
             title: title,
             message: message,
-            buttons: autoClose ? [] : [{ title: chrome.i18n.getMessage('closeButton') }]  // Decide whether to add a close button based on the autoClose parameter
+            buttons: [
+                { title: chrome.i18n.getMessage('addToFavorites') }, // 收藏
+                { title: chrome.i18n.getMessage('addToWatchLater') } // 待看
+            ]
+            // buttons: autoClose ? [] : [{ title: chrome.i18n.getMessage('closeButton') }]  // Decide whether to add a close button based on the autoClose parameter
         }, function(notificationId) {
             if (autoClose) {
                 setTimeout(() => {
@@ -154,10 +158,20 @@ function showNotification(title, message, autoClose = false) {
             } else {
                 // Listen for notification button click events
                 chrome.notifications.onButtonClicked.addListener(function(notifId, btnIdx) {
-                    if (notifId === notificationId && btnIdx === 0) {
+                    if (notifId === notificationId) {
+                        if (btnIdx === 0) {
+                            syncBookmarks('favorites');
+                        } else if (btnIdx === 1) {
+                            syncBookmarks('watchLater');
+                        }
                         chrome.notifications.clear(notificationId);
                     }
                 });
+                // chrome.notifications.onButtonClicked.addListener(function(notifId, btnIdx) {
+                //     if (notifId === notificationId && btnIdx === 0) {
+                //         chrome.notifications.clear(notificationId);
+                //     }
+                // });
 
                 // Listen for notification click events
                 chrome.notifications.onClicked.addListener(function(notifId) {
@@ -184,7 +198,31 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 });
 
 // Listen for bookmark events: add, delete, modify, move
-chrome.bookmarks.onCreated.addListener(syncBookmarks);
+chrome.bookmarks.onCreated.addListener((id, bookmark) => {
+    checkAndCreateWatchLaterFolder();
+    const title = chrome.i18n.getMessage('appName'); // notificationTitle
+    const message = chrome.i18n.getMessage('syncMessage');
+    showNotification(title, message, false);
+});
+
 chrome.bookmarks.onRemoved.addListener(syncBookmarks);
 chrome.bookmarks.onChanged.addListener(syncBookmarks);
 chrome.bookmarks.onMoved.addListener(syncBookmarks);
+
+
+function checkAndCreateWatchLaterFolder() {
+    chrome.bookmarks.getTree((bookmarkTreeNodes) => {
+        const bookmarksBar = bookmarkTreeNodes[0].children.find(node => node.title === 'Bookmarks bar');
+        if (bookmarksBar) {
+            const watchLaterFolder = bookmarksBar.children.find(node => node.title === '待看');
+            if (!watchLaterFolder) {
+                chrome.bookmarks.create({
+                    parentId: bookmarksBar.id,
+                    title: '待看'
+                }, (newFolder) => {
+                    console.log('Created "待看" folder:', newFolder);
+                });
+            }
+        }
+    });
+}
