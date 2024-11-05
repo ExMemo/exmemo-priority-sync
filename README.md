@@ -2,48 +2,54 @@ English | [中文简体](./README_cn.md)
 
 ## 1. Introduction
 
-The [ExMemo](https://github.com/ExMemo/exmemo.git) is a personal knowledge management project designed to centrally record and manage various types of information, including favorite texts, books, music, videos, web pages, work documents, as well as reflections and thoughts about life. By systematically integrating these elements, it aims to break through cognitive limitations and discover internal connections.
+The [ExMemo Project](https://github.com/ExMemo/exmemo.git) is a personal knowledge management system designed to centralize and manage various types of information, including favorite texts, books, music, videos, web pages, work documents, and reflections on life. It also automates the categorization of specific items such as locations, phone numbers, and addresses, allowing for easy retrieval. By systematically integrating data, it breaks through cognitive limitations and uncovers intrinsic connections.
 
 ![](./images/img1.png)
 
-The system consists of a database, backend, and multiple front-ends. Distributed storage and databases are used to store user files, text, and corresponding vector data. Data storage can be deployed locally to protect user privacy. The backend provides general interfaces for data creation, reading, updating, and deletion (CRUD) operations and is responsible for invoking large models and processing data. The system supports mainstream online large models like OpenAI, Gemini, Qwen as well as offline models like Ollama. Multiple front-ends are available in the form of web services, WeChat bots, Obsidian plugins, and browser extensions for users to upload and download data.
+The system architecture comprises a database, backend, and multiple frontends. Distributed storage and databases are utilized to store user files, text, and corresponding vector data. Data storage can be deployed locally to ensure user privacy. The backend provides generic interfaces for CRUD operations on data and handles large model invocations and data processing. The system supports online large models such as OpenAI, Gemini, Qwen, and offline models like Ollama. Multiple frontends, including web services, WeChat bots, Obsidian plugins, and browser plugins, allow users to upload and download data.
 
 ![](./images/img2.png)
 
-`bookmarks-sync` is a Chrome extension based on ExMemo designed to sync browser bookmarks to the database.
+`browser-exmemo-bmsync` is a Chrome extension based on ExMemo, designed to synchronize browser bookmarks to the database. This integration allows browser bookmark data (external data sources) to be aggregated into ExMemo's personal data platform, facilitating offline storage and convenient retrieval.
 
 ## 2. Key Features
 
-- **Sync Mechanism**: Users can manually click the "Sync" button or have the sync automatically triggered when bookmarks change.
-- **Bookmark Management**: Supports setting bookmarks as "To-Read" or "Favorite," with favorites representing more important entries.
-- **Link Detection**: Automatically identifies broken links and marks them in the database.
-- **Incremental Sync**: Processes only data changes during each sync to improve efficiency.
+- **Enhanced Synchronization Mechanism**: 
+  - For first-time users, a simple click on the "Sync" button facilitates the effortless migration of all bookmark data to ExMemo's cloud-based database, enabling bulk import with a single action.
+  - The system employs a sophisticated real-time monitoring mechanism that adeptly captures any changes to bookmarks, including additions, deletions, or modifications. This triggers an automatic synchronization process, ensuring that data remains perpetually up-to-date.
 
-## 3. Installation and Setup
+- **Bookmark Management**: 
+  - Users can efficiently categorize bookmarks into "To Read" and "Favorites" states, thereby distinguishing between importance and priority levels.
+  - Bookmarks designated as "To Read" are intelligently archived into a dedicated "To Read" folder. If the folder does not already exist, the system automatically generates it, ensuring a structured and layered approach to reading plans.
+
+- **Link Health Checker**: 
+  - The system features an advanced link health checker that conducts real-time scans to identify and flag broken or invalid links within the database. This allows for the precise removal of obsolete information, maintaining the integrity and relevance of the bookmark collection.
+
+## 3. Installation and Configuration
 
 ### 3.1 Installation
 
 1. Clone or download this repository.
-2. Open Google Chrome and go to the Extensions Manager (type `chrome://extensions/` in the address bar).
-3. Toggle the "Developer mode" switch in the upper right corner.
-4. Click "Load unpacked" and select the `bookmarks-sync` folder to install.
+2. Open Google Chrome and navigate to the Extensions Management page (`chrome://extensions/`).
+3. Enable "Developer mode" in the top right corner.
+4. Click "Load unpacked" and select the `browser-exmemo-bmsync` folder to install the extension.
 
 ### 3.2 Initial Setup
 
-Upon the first installation, input the server address (`addr`), username, and password as prompted by the configuration page.  
-Restart Google Chrome to apply changes.
+Upon first installation, input the server address (`addr`), username, and password as prompted.  
+Restart Chrome to apply the changes.
 
 ## 4. Usage
 
-- **First Manual Sync**: A manual sync needs to be triggered when using the extension for the first time.
-- **Automatic Sync**: Subsequent changes will automatically sync.
-- **Bookmark Categorization**: Tag bookmarks with types like "To-Read" or "Favorite."
+- **Initial Manual Synchronization**: Manually trigger synchronization on first use.
+- **Automatic Synchronization**: Subsequent changes are automatically synchronized.
+- **Bookmark Categorization**: Tag bookmarks with types such as "To-Read" or "Favorites".
 
-## 5. To-Do
+## 5. Future Enhancements
 
-- Add configuration options to toggle bookmark content syncing.
-- Make compatible with more browsers.
+- Implement a configuration switch to choose whether to synchronize bookmark content.
+- Ensure compatibility with more browsers.
 
 ## 6. License
 
-This project is licensed under the terms of the GNU Lesser General Public License v3.0. For more details, please see the [LICENSE](./LICENSE) file.
+This project is licensed under the terms of the GNU Lesser General Public License v3.0. For more details, please refer to the [LICENSE](./LICENSE) file.

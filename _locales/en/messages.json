@@ -8,6 +8,9 @@
     "syncMessage": {
         "message": "Syncing bookmarks, this may take a while..."
     },
+    "syncRemovedMessage": {
+        "message": "Removing current bookmark, please wait..."
+    },
     "syncCompleteMessage": {
         "message": "Sync complete"
     },
@@ -22,6 +25,9 @@
     },
     "password_text": {
         "message": "Password:"
+    },
+    "downloadcontent_text": {
+        "message": "Download Content:"
     },
     "settingsSaved": {
         "message": "Settings Saved"
@@ -38,7 +44,10 @@
     "collect_text": {
         "message": "Collect"
     },
-    "watchLater": {
-        "message": "Watch Later"
+    "todo_text": {
+        "message": "To-Do"
+    },
+    "bookmarksbar": {
+        "message": "Bookmarks Bar"
     }
 }
