@@ -4,7 +4,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const passwordInput = document.getElementById('password');
     const saveButton = document.getElementById('save');
 
-    // 加载用户之前保存的设置
     chrome.storage.sync.get(['addr', 'username', 'password'], (items) => {
         console.log('Loaded settings:', items);
         ipInput.value = items.addr || 'http://localhost:8005';
@@ -12,11 +11,11 @@ document.addEventListener('DOMContentLoaded', () => {
         passwordInput.value = items.password || 'guest';
     });
 
-    // 保存设置
     saveButton.addEventListener('click', () => {
         const addr = ipInput.value;
         const username = usernameInput.value;
         const password = passwordInput.value;
+
         console.log('Saving settings:', { addr, username, password });
         chrome.storage.sync.set({ addr, username, password }, () => {
             console.log('Settings saved:', { addr, username, password });
@@ -24,10 +23,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // 设置国际化文本
     document.getElementById('appName').innerText = chrome.i18n.getMessage('appName');
     document.getElementById('ipAddress').innerText = chrome.i18n.getMessage('ipAddress');
-    document.getElementById('username').innerText = chrome.i18n.getMessage('username');
-    document.getElementById('password').innerText = chrome.i18n.getMessage('password');
-    document.getElementById('save').innerText = chrome.i18n.getMessage('saveSettings');
+    document.getElementById('username_text').innerText = chrome.i18n.getMessage('username_text');
+    document.getElementById('password_text').innerText = chrome.i18n.getMessage('password_text');
+    document.getElementById('saveSettings').innerText = chrome.i18n.getMessage('saveSettings');
 });

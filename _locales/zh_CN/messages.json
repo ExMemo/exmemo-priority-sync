@@ -6,7 +6,10 @@
         "message": "同步"
     },
     "syncMessage": {
-        "message": "正在同步书签,可能需要一些时间..."
+        "message": "同步中,可能需要一些时间..."
+    },
+    "syncRemovedMessage": {
+        "message": "正在移除当前书签,请稍后..."
     },
     "syncCompleteMessage": {
         "message": "同步完成"
@@ -23,6 +26,9 @@
     "password_text": {
         "message": "密码:"
     },
+    "downloadcontent_text": {
+        "message": "是否下载内容:"
+    },
     "settingsSaved": {
         "message": "设置已保存"
     },
@@ -38,7 +44,10 @@
     "collect_text": {
         "message": "收藏"
     },
-    "watchLater": {
+    "todo_text": {
         "message": "待看"
+    },
+    "bookmarksbar": {
+        "message": "书签栏"
     }
 }
