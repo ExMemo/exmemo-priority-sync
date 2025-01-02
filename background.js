@@ -89,7 +89,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         const message = chrome.i18n.getMessage('syncMessage');
         showNotification(title, message, true);
         console.log("Notification displayed:", title, message);        
-        syncBookmarks('collect', 'all');
     }
     return true;
 });
