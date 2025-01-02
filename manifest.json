@@ -8,11 +8,13 @@
         "open_in_tab": true
     },
     "permissions": [
-        "notifications",
         "bookmarks",
+        "notifications",
         "storage",
+        "history",
+        "contextMenus",
         "activeTab",
-        "contextMenus"
+        "scripting"
     ],
     "background": {
         "service_worker": "background.js",
