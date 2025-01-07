@@ -26,12 +26,13 @@ function convertBookmarksToArray(bookmarksTree, parentPath = '', status = 'todo'
 
         if (node.url) {
             const fullPath = currentPath ? `${currentPath}/${node.title}` : node.title;
+            const isInWatchLater = fullPath.includes('/' + chrome.i18n.getMessage('todo_text') + '/');
             results.push({
                 title: node.title,
                 url: node.url,
                 add_date: node.dateAdded ? new Date(parseInt(node.dateAdded)).toISOString() : null,
                 path: fullPath,
-                status,
+                status: isInWatchLater ? 'todo' : status,
                 action
             });
         }
@@ -333,25 +334,11 @@ function sendBookmarksToServer(bookmarks, status = 'todo', action='create') {
         const processBookmarks = new Promise(async (resolve, reject) => {
             try {
                 let processedBookmarks;
-                const processedMap = new Map();
 
-                const filterDuplicates = (bookmarks) => {
-                    return bookmarks.filter(bookmark => {
-                        const key = `${bookmark.url}|${bookmark.path}`;
-                        if (processedMap.has(key)) {
-                            console.log(`skip dup bm: ${bookmark.title} at ${bookmark.path}`);
-                            return false;
-                        }
-                        processedMap.set(key, true);
-                        return true;
-                    });
-                };
                 if (Array.isArray(bookmarks)) {
                     if (bookmarks[0] && bookmarks[0].children) {
                         console.log('detalied bookmarks:', bookmarks);
-                        processedBookmarks = filterDuplicates(
-                            convertBookmarksToArray(bookmarks, '', status, action)
-                        );
+                        processedBookmarks = convertBookmarksToArray(bookmarks, '', status, action);
                     } else {
                         const path = await new Promise(resolve => {
                             getBookmarkPath(bookmarks[0].id, resolve);
@@ -530,6 +517,7 @@ function showNotification(title, message, autoClose = false, buttons=[], id = nu
                 console.log('Notification auto-closed.');
                 chrome.notifications.clear(createdNotificationId);
                 
+                // 这里在自动关闭时还可能触发一次
                 if (message === chrome.i18n.getMessage('syncMessage') && !buttons.length) {
                     console.log('Triggering sync after auto-close');
                     syncBookmarks('collect', id='all', action);
