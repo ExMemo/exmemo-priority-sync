@@ -1,6 +1,7 @@
 {
     "manifest_version": 3,
     "name": "ExMemo Bookmark Sync",
+    "description": "Sync bookmarks with ExMemo",
     "version": "1.0",
     "default_locale": "zh_CN",
     "options_ui": {

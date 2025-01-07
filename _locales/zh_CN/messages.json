@@ -133,5 +133,8 @@
     },
     "requestTimeout": {
         "message": "请求超时，请检查网络连接"
+    },
+    "done_text": {
+        "message": "完成"
     }
 }
