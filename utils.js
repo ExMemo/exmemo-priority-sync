@@ -4,7 +4,6 @@ let createdNotificationId;
 let bookmarksArray = [];
 
 function convertBookmarksToArray(bookmarksTree, parentPath = '', status = 'todo', action = 'create') {
-    // 输入验证
     if (!Array.isArray(bookmarksTree)) {
         console.error('Invalid bookmarksTree:', bookmarksTree);
         return [];
@@ -516,8 +515,7 @@ function showNotification(title, message, autoClose = false, buttons=[], id = nu
             timeoutId = setTimeout(() => {
                 console.log('Notification auto-closed.');
                 chrome.notifications.clear(createdNotificationId);
-                
-                // 这里在自动关闭时还可能触发一次
+
                 if (message === chrome.i18n.getMessage('syncMessage') && !buttons.length) {
                     console.log('Triggering sync after auto-close');
                     syncBookmarks('collect', id='all', action);

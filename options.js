@@ -73,57 +73,21 @@ document.addEventListener('DOMContentLoaded', () => {
         */
     });
 
-    /* 
-    extractContentInput.addEventListener('change', updateContentOptions);
-    truncateContentInput.addEventListener('change', updateTruncateOptions);
-    */
 
-    // 修改存储设置的处理逻辑
     saveButton.addEventListener('click', async () => {
         const settings = {
-            addr: ipInput.value.trim(), // 添加 trim() 去除可能的空格
+            addr: ipInput.value.trim(),
             username: usernameInput.value.trim(),
             password: passwordInput.value,
             extractContent: extractContentInput.checked
         };
 
         try {
-            // 验证连接信息
             console.log('Verifying connection to:', settings.addr);
             const token = await getToken(settings.addr, settings.username, settings.password);
             console.log('Connection verified:', token.slice(0, 10) + '...');
             
-            // 保存到 Chrome Storage
             await new Promise(resolve => chrome.storage.sync.set(settings, resolve));
-
-            /* 
-            try {
-                const response = await fetch(settings.addr + '/api/bm/settings/', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Token ' + token
-                    },
-                    body: JSON.stringify({
-                        settings: {
-                            'extract_content': settings.extractContent
-                        }
-                    })
-                });
-
-                const data = await response.json();
-                if (data.status !== 'success') {
-                    throw new Error(data.message || 'Failed to save settings');
-                }
-            } catch (error) {
-                if (error.message.includes('Failed to fetch')) {
-                    alert(chrome.i18n.getMessage('serverConnectionError'));
-                } else {
-                    alert(chrome.i18n.getMessage('settingsSaveError') + ': ' + error.message);
-                }
-                return;
-            }
-            */
 
             alert(chrome.i18n.getMessage('settingsSaved'));
             
@@ -138,7 +102,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // 加载存储的设置
     chrome.storage.sync.get([
         'addr', 'username', 'password',
         'extractContent'
@@ -148,19 +111,4 @@ document.addEventListener('DOMContentLoaded', () => {
         passwordInput.value = items.password || 'guest';
         extractContentInput.checked = items.extractContent ?? false;
     });
-
-    /* 
-    document.getElementById('truncateMode_hint').innerText = chrome.i18n.getMessage('truncateMode_hint');
-    document.getElementById('truncateContent_text').innerText = chrome.i18n.getMessage('truncateContent');
-    document.getElementById('maxContentLength_text').innerText = chrome.i18n.getMessage('maxContentLength');
-    document.getElementById('truncateMode_text').innerText = chrome.i18n.getMessage('truncateMode');
-    document.getElementById('llmApiKey_text').innerText = chrome.i18n.getMessage('llmApiKey');
-    document.getElementById('llmBaseUrl_text').innerText = chrome.i18n.getMessage('llmBaseUrl');
-    document.getElementById('llmModel_text').innerText = chrome.i18n.getMessage('llmModel');
-    document.getElementById('llmSettings_text').innerText = chrome.i18n.getMessage('llmSettings');
-    document.getElementById('autoTagHint_text').innerText = chrome.i18n.getMessage('autoTagHint');
-    document.getElementById('tagsSection_text').innerText = chrome.i18n.getMessage('tagsSection');
-    document.getElementById('truncateContent_hint').innerText = chrome.i18n.getMessage('truncateContent_hint');
-    document.getElementById('maxContentLength_hint').innerText = chrome.i18n.getMessage('maxContentLength_hint');
-    document.getElementById('truncateMode_hint').innerText = chrome.i18n.getMessage('truncateMode_hint');
-    */});
+});

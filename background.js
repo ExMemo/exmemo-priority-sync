@@ -19,11 +19,10 @@ chrome.runtime.onInstalled.addListener((details) => {
     initializeBookmarkListeners();
 });
 
-// 添加URL规范化函数
+
 function normalizeUrl(url) {
     try {
         const urlObj = new URL(url);
-        // 移除末尾的斜杠
         return urlObj.href.replace(/\/$/, '');
     } catch (e) {
         console.error('Invalid URL:', url, e);
@@ -31,7 +30,7 @@ function normalizeUrl(url) {
     }
 }
 
-// 修改 initializeBookmarkListeners 函数
+
 const initializeBookmarkListeners = () => {
     if (chrome.history) {
         console.log('History API is available, setting up visit listener');
@@ -46,7 +45,6 @@ const initializeBookmarkListeners = () => {
             const normalizedUrl = normalizeUrl(historyItem.url);
             console.log('Normalized URL:', normalizedUrl);
             
-            // 修改搜索方式,使用精确匹配
             chrome.bookmarks.search({}, (bookmarks) => {
                 const matchingBookmark = bookmarks.find(b => normalizeUrl(b.url) === normalizedUrl);
                 
