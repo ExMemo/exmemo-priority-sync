@@ -9,7 +9,10 @@
         "message": "同步中,可能需要一些时间..."
     },
     "syncRemovedMessage": {
-        "message": "正在移除当前书签,请稍后..."
+        "message": "正在移除当前书签，请稍后..."
+    },
+    "removeSuccess": {
+        "message": "书签移除成功"
     },
     "syncCompleteMessage": {
         "message": "同步完成"
@@ -49,5 +52,89 @@
     },
     "bookmarksbar": {
         "message": "书签栏"
+    },
+    "extractContent_text": {
+        "message": "开启此选项将提取摘要和标签，可能导致同步速度变慢，并消耗更多 LLM Token 来处理截断的内容。"
+    },
+    "basicSettings": {
+        "message": "基本设置"
+    },
+    "truncateContent": {
+        "message": "内容太长是否截断"
+    },
+    "truncateContent_hint": {
+        "message": "(使用LLM时，如果内容超过最大字数，是否截断以节约 token )"
+    },
+    "maxContentLength": {
+        "message": "最大内容长度"
+    },
+    "maxContentLength_hint": {
+        "message": "(设置内容的最大 token 限制)"
+    },
+    "truncateMode": {
+        "message": "内容截断方式"
+    },
+    "truncateMode_hint": {
+        "message": "(选择内容超过限制时的处理方式)"
+    },
+    "truncateStart": {
+        "message": "仅提取开头"
+    },
+    "truncateStartEnd": {
+        "message": "提取开头和结尾"
+    },
+    "truncateHeading": {
+        "message": "提取标题及下方文字"
+    },
+    "llmApiKey": {
+        "message": "API密钥:"
+    },
+    "llmBaseUrl": {
+        "message": "API地址:"
+    },
+    "llmModel": {
+        "message": "模型名称:"
+    },
+    "llmSettings": {
+        "message": "LLM设置"
+    },
+    "tagsSection": {
+        "message": "标签"
+    },
+    "autoTagHint": {
+        "message": "自动生成标签"
+    },
+    "invalidCredentials": {
+        "message": "用户名或密码无效，请重新登录"
+    },
+    "serverConnectionError": {
+        "message": "服务器连接失败，请检查网络连接和服务器地址"
+    },
+    "configLoadError": {
+        "message": "加载配置失败，请检查网络连接和服务器地址"
+    },
+    "settingsSaveError": {
+        "message": "保存设置失败"
+    },
+    "syncFailedError": {
+        "message": "同步失败，请稍后重试"
+    },
+    "bookmarkError": {
+        "message": "处理书签时出错，请重试"
+    },
+    "bookmarkNotFound": {
+        "message": "未找到指定书签"
+    },
+    "serverNotFound": {
+        "message": "找不到服务器，请检查服务器地址"
+    },
+    "serverError": {
+        "message": "服务器内部错误，请稍后重试"
+    },
+    "requestTimeout": {
+        "message": "请求超时，请检查网络连接"
+    },
+    "done_text": {
+        "message": "完成"
     }
 }

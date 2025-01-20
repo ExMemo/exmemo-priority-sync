@@ -49,5 +49,86 @@
     },
     "bookmarksbar": {
         "message": "Bookmarks Bar"
+    },
+    "extractContent_text": {
+        "message": "Extract Page Content (Enabling this option will slow down synchronization and consume more LLM tokens for extracting summaries and tags from truncated content.)"
+    },
+    "truncateContent": {
+        "message": "Truncate Long Content"
+    },
+    "truncateContent_hint": {
+        "message": "(When using LLM, truncate content if it exceeds max length to save tokens)"
+    },
+    "maxContentLength": {
+        "message": "Max Content Length"
+    },
+    "maxContentLength_hint": {
+        "message": "(Set maximum token limit for content)"
+    },
+    "truncateMode": {
+        "message": "Content Truncate Mode"
+    },
+    "truncateMode_hint": {
+        "message": "(Select how to handle content when it exceeds the limit)"
+    },
+    "truncateStart": {
+        "message": "Extract Start Only"
+    },
+    "truncateStartEnd": {
+        "message": "Extract Start and End"
+    },
+    "truncateHeading": {
+        "message": "Extract Headings and Text Below"
+    },
+    "llmSettings": {
+        "message": "LLM Settings"
+    },
+    "llmApiKey": {
+        "message": "API Key:"
+    },
+    "llmBaseUrl": {
+        "message": "Base URL:"
+    },
+    "llmModel": {
+        "message": "Model Name:"
+    },
+    "tagsSection": {
+        "message": "Tags"
+    },
+    "autoTagHint": {
+        "message": "    Auto Generate Tags"
+    },
+    "invalidCredentials": {
+        "message": "Invalid username or password. Please login again."
+    },
+    "serverConnectionError": {
+        "message": "Server connection failed. Please check your network and server address."
+    },
+    "configLoadError": {
+        "message": "Failed to load configuration, please check network connection and server address"
+    },
+    "settingsSaveError": {
+        "message": "Failed to save settings"
+    },
+    "syncFailedError": {
+        "message": "Sync failed. Please try again later."
+    },
+    "bookmarkError": {
+        "message": "Error processing bookmark. Please try again."
+    },
+    "bookmarkNotFound": {
+        "message": "Bookmark not found"
+    },
+    "serverNotFound": {
+        "message": "Server not found. Please check server address."
+    },
+    "serverError": {
+        "message": "Internal server error. Please try again later."
+    },
+    "requestTimeout": {
+        "message": "Request timeout. Please check your network connection."
+    },
+    "basicSettings": {
+        "message": "Basic Settings"
     }
 }
