@@ -1,7 +1,14 @@
+const BATCH_SIZE = 20;
+
 let isFirstInstall = false;
-let bookmarksToSyncCount = 0;
-let createdNotificationId;
-let bookmarksArray = [];
+
+let syncProgress = {
+    total: 0,
+    processed: 0,
+    notificationId: null,
+    intervalId: null,
+    isBatchSync: false
+};
 
 function convertBookmarksToArray(bookmarksTree, parentPath = '', status = 'todo', action = 'create') {
     if (!Array.isArray(bookmarksTree)) {
@@ -61,6 +68,7 @@ function checkAndCreateWatchLaterFolder(callback) {
         if (bookmarksBar) {
             let watchLaterFolder = bookmarksBar.children.find(node => node.title === chrome.i18n.getMessage('todo_text'));
             if (!watchLaterFolder) {
+                console.log('readlater folder does not exist, creating...');
                 chrome.bookmarks.create({
                     parentId: bookmarksBar.id,
                     title: chrome.i18n.getMessage('todo_text')
@@ -68,6 +76,7 @@ function checkAndCreateWatchLaterFolder(callback) {
                     if (chrome.runtime.lastError) {
                         console.error('Error creating folder:', chrome.runtime.lastError);
                     } else {
+                        console.log('Successfully created the pending folder:', newFolder.title);
                         callback(newFolder.id);
                     }
                 });
@@ -77,8 +86,6 @@ function checkAndCreateWatchLaterFolder(callback) {
         } else {
             console.error('Bookmarks bar not found');
         }
-    });
-}
 
 // Get specified bookmark and send it to server
 function getAndSendBookmark(bookmarkId, status, action='create') {
@@ -297,11 +304,111 @@ function getBookmarkPath(bookmarkId, callback) {
     });
 }
 
-function sendBookmarksToServer(bookmarks, status = 'todo', action='create') {
+// updata batchsize progress
+function updateSyncProgress(processed, total) {
+    if (!syncProgress.isBatchSync) return;
+    
+    syncProgress.processed = processed;
+    const percentage = Math.round((processed / total) * 100);
+    const progressMsg = `[${processed}/${total}] (${percentage}%)`;
+    console.log(`[Sync Progress] Progress: ${progressMsg}`);
+    
+    return new Promise((resolve) => {
+        chrome.notifications.clear(syncProgress.notificationId, () => {
+            chrome.notifications.create({
+                type: 'basic',
+                iconUrl: 'images/icon-48.png',
+                title: chrome.i18n.getMessage('appName'),
+                message: progressMsg,
+                priority: 2,
+                requireInteraction: true,
+                silent: false
+            }, (newId) => {
+                syncProgress.notificationId = newId;
+                resolve();
+            });
+        });
+    });
+}
+
+function startProgressNotification(total) {
+    console.log(`[Sync Start] Starting sync for ${total} bookmarks`);
+    
+    syncProgress.total = total;
+    syncProgress.processed = 0;
+    syncProgress.isBatchSync = true;
+    
+    return new Promise((resolve) => {
+        chrome.notifications.create({
+            type: 'basic',
+            iconUrl: 'images/icon-48.png',
+            title: chrome.i18n.getMessage('appName'),
+            message: `[0/${total}] (0%)`,
+            priority: 2,
+            requireInteraction: true,
+            silent: false
+        }, (id) => {
+            syncProgress.notificationId = id;
+            console.log(`[Sync Progress] Created persistent notification with ID: ${id}`);
+            resolve(id);
+        });
+    });
+}
+
+function finishProgressNotification(success = true) {
+    if (!syncProgress.isBatchSync) return;
+    
+    const finalStatus = success ? 'Success' : 'Failed';
+    const endMsg = success ? 
+        chrome.i18n.getMessage('syncStatus', [
+            String(syncProgress.processed),
+            String(syncProgress.total)
+        ]) :
+        chrome.i18n.getMessage('syncFailed');
+    
+    console.log(`[Sync End] Sync completed with status: ${finalStatus}`);
+    console.log(`[Sync Summary] Total: ${syncProgress.total}, Processed: ${syncProgress.processed}, Success Rate: ${Math.round((syncProgress.processed/syncProgress.total) * 100)}%`);
+    
+    if (syncProgress.intervalId) {
+        clearInterval(syncProgress.intervalId);
+        syncProgress.intervalId = null;
+    }
+    
+    return new Promise((resolve) => {
+        chrome.notifications.clear(syncProgress.notificationId, () => {
+            chrome.notifications.create({
+                type: 'basic',
+                iconUrl: 'images/icon-48.png',
+                title: chrome.i18n.getMessage('appName'),
+                message: endMsg,
+                priority: 2,
+                requireInteraction: true,
+                silent: false
+            }, (newId) => {
+                syncProgress.notificationId = newId;
+                syncProgress.isBatchSync = false;
+                console.log('[Sync End] Created final notification:', newId);
+                resolve();
+            });
+        });
+    });
+}
+
+chrome.notifications.onClicked.addListener((notificationId) => {
+    if (notificationId === syncProgress.notificationId) {
+        // user clicked on the sync notification
+        chrome.notifications.clear(notificationId);
+        syncProgress.notificationId = null;
+    }
+});
+
+// bm sync to server
+async function sendBookmarksToServer(bookmarks, status = 'todo', action='create') {
     try {
         if (!bookmarks) {
             throw new Error('Bookmarks parameter is required');
         }
+        
         if (action === 'delete') {
             const deleteBookmark = Array.isArray(bookmarks) ? bookmarks[0] : bookmarks;
             const processedBookmark = {
@@ -360,64 +467,99 @@ function sendBookmarksToServer(bookmarks, status = 'todo', action='create') {
             }
         });
 
-        processBookmarks.then(processedBookmarks => {
-            console.log('detalied bm:', processedBookmarks.length);
+        const processedBookmarks = await processBookmarks;
+        console.log('detalied bm:', processedBookmarks.length);
 
-            if (!Array.isArray(processedBookmarks)) {
-                throw new Error('Failed to process bookmarks into array');
+        const validBookmarks = processedBookmarks.filter(bookmark => {
+            if (!bookmark) {
+                console.warn('Found null or undefined bookmark entry');
+                return false;
             }
-
-            const validBookmarks = processedBookmarks.filter(bookmark => {
-                if (!bookmark) {
-                    console.warn('Found null or undefined bookmark entry');
-                    return false;
-                }
-                if (!bookmark.url) {
-                    console.warn('Skipping bookmark without URL:', bookmark);
-                    return false;
-                }
-                if (!bookmark.title) {
-                    console.warn('Skipping bookmark without title:', bookmark);
-                    return false;
-                }
-                return true;
-            });
-
-            if (validBookmarks.length === 0) {
-                throw new Error('No valid bookmarks found after filtering');
+            if (!bookmark.url) {
+                console.warn('Skipping bookmark without URL:', bookmark);
+                return false;
             }
+            if (!bookmark.title) {
+                console.warn('Skipping bookmark without title:', bookmark);
+                return false;
+            }
+            return true;
+        });
 
-            bookmarksToSyncCount = validBookmarks.length;
-            console.log(`Sending ${bookmarksToSyncCount} valid bookmarks to server`);
+        if (validBookmarks.length === 0) {
+            throw new Error('No valid bookmarks found after filtering');
+        }
+
+        // batch sync
+        if (validBookmarks.length > 1) {
+            await startProgressNotification(validBookmarks.length);
+            const batches = [];
             
-            // 发送到服务器
-            sendRequestToServer('/api/bookmarks/', validBookmarks, (data) => {
+            for (let i = 0; i < validBookmarks.length; i += BATCH_SIZE) {
+                batches.push(validBookmarks.slice(i, i + BATCH_SIZE));
+            }
+            
+            console.log(`[Sync Info] Split into ${batches.length} batches, ${BATCH_SIZE} bookmarks per batch`);
+            let processed = 0;
+            
+            // process each batch
+            for (let i = 0; i < batches.length; i++) {
+                const batch = batches[i];
+                console.log(`[Sync Batch] Processing batch ${i + 1}/${batches.length}`);
+                
+                try {
+                    await new Promise((resolve) => {
+                        sendRequestToServer('/api/bookmarks/', batch, async (data) => {
+                            if (data && data.results) {
+                                processed += data.results.length;
+                                syncProgress.processed = processed;
+                                
+                                await updateSyncProgress(processed, validBookmarks.length);
+                                console.log(`[Sync Batch] Batch ${i + 1} completed: ${processed}/${validBookmarks.length}`);
+                            }
+                            setTimeout(resolve, 1000);
+                        });
+                    });
+                } catch (error) {
+                    console.error(`[Sync Error] Batch ${i + 1} failed:`, error);
+                }
+            }
+            
+            // finish progress notification
+            await finishProgressNotification(processed > 0);
+        } else {
+            // single sync
+            sendRequestToServer('/api/bookmarks/', validBookmarks, async (data) => {
                 if (!data || !data.results) {
-                    showNotification(
-                        chrome.i18n.getMessage('appName'),
-                        chrome.i18n.getMessage('syncFailedError'),
-                        true
-                    );
+                    await finishProgressNotification(false);
+                    if (!syncProgress.isBatchSync) {
+                        showNotification(
+                            chrome.i18n.getMessage('appName'),
+                            chrome.i18n.getMessage('syncFailedError'),
+                            true
+                        );
+                    }
                     return;
                 }
 
-                const successCount = data.results.length;
-                console.log(`Sync complete: ${successCount}/${bookmarksToSyncCount} bookmarks processed`);
-                
-                const title = chrome.i18n.getMessage('appName');
-                const message = action === 'delete' ? 
-                    chrome.i18n.getMessage('removeSuccess') : 
-                    chrome.i18n.getMessage('syncCompleteMessage');
-                    
-                showNotification(title, message, true);
+                if (syncProgress.isBatchSync) {
+                    syncProgress.processed = data.results.length;
+                    await updateSyncProgress(data.results.length, validBookmarks.length);
+                    setTimeout(() => {
+                        finishProgressNotification(true);
+                    }, 1000);
+                } else {
+                    showNotification(
+                        chrome.i18n.getMessage('appName'),
+                        chrome.i18n.getMessage('syncCompleteMessage'),
+                        true
+                    );
+                }
             });
-        }).catch(error => {
-            console.error('Error processing bookmarks:', error);
-            throw error;
-        });
-
+        }
     } catch (error) {
-        console.error('Error in sendBookmarksToServer:', error);
+        await finishProgressNotification(false);
+        console.error('[Sync Error] Error in sendBookmarksToServer:', error);
         const title = chrome.i18n.getMessage('appName');
         const message = `${chrome.i18n.getMessage('bookmarkError')} (${error.message})`;
         showNotification(title, message, true);

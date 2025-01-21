@@ -130,5 +130,11 @@
     },
     "basicSettings": {
         "message": "Basic Settings"
+    },
+    "syncStatus": {
+        "message": "Sync completed [%1$s/%2$s]"
+    },
+    "syncFailed": {
+        "message": "Sync failed"
     }
 }
