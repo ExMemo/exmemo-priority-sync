@@ -9,9 +9,9 @@
         "open_in_tab": true
     },
     "permissions": [
-        "bookmarks",
-        "notifications",
         "storage",
+        "notifications",
+        "bookmarks",
         "history",
         "contextMenus",
         "activeTab",

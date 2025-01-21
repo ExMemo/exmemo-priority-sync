@@ -123,7 +123,7 @@ function getAndSendBookmark(bookmarkId, status, action='create') {
 // get the bookmark tree and send it to the server
 function getAndSendBookmarkTree(status, action='all') {
     chrome.bookmarks.getTree((bookmarkTreeNodes) => {
-        console.log('Original bookmark tree structure:', JSON.stringify(bookmarkTreeNodes, null, 2));
+        // console.log('Original bookmark tree structure:', JSON.stringify(bookmarkTreeNodes, null, 2));
         
         if (!bookmarkTreeNodes || bookmarkTreeNodes.length === 0) {
             console.error('Retrieved bookmark tree is empty');
@@ -202,76 +202,68 @@ function getToken(addr, username, password) {
 
 function sendRequestToServer(endpoint, data, successCallback) {
     const TIMEOUT = 30000;
+    const MAX_RETRIES = 3;
     
-    chrome.storage.sync.get(['addr', 'username', 'password', 'extractContent'], (items) => {
-        console.log('Storage items:', {
-            addr: items.addr,
-            username: items.username,
-        });
-        
-        const addr = items.addr || 'http://localhost:8005';
-        const username = items.username || 'guest'; 
-        const password = items.password || 'guest'; 
+    const makeRequest = async (retryCount = 0) => {
+        try {
+            const items = await chrome.storage.sync.get(['addr', 'username', 'password', 'extractContent']);
+            const addr = items.addr || 'http://localhost:8005';
+            const username = items.username || 'guest';
+            const password = items.password || 'guest';
 
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), TIMEOUT);
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => {
+                controller.abort('Timeout');
+            }, TIMEOUT);
 
-        getToken(addr, username, password)
-        .then(token => {
-            console.log('Got token:', token.slice(0, 10) + '...');
-            const Token = 'Token ' + token;
-            return fetch(`${addr}${endpoint}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': Token,
-                    'X-Extract-Content': items.extractContent || 'false'
-                },
-                body: JSON.stringify(data),
-                signal: controller.signal
-            });
-        })
-        .then(response => {
-            clearTimeout(timeoutId);
-            if (!response.ok) {
-                let errorMessage;
-                switch(response.status) {
-                    case 401:
-                        errorMessage = chrome.i18n.getMessage('invalidCredentials');
-                        break;
-                    case 404:
-                        errorMessage = chrome.i18n.getMessage('serverNotFound'); 
-                        break;
-                    case 500:
-                        errorMessage = chrome.i18n.getMessage('serverError');
-                        break;
-                    default:
-                        errorMessage = chrome.i18n.getMessage('serverConnectionError');
-                }
-                chrome.runtime.sendMessage({ 
-                    action: "showError",
-                    message: errorMessage 
+            try {
+                const token = await getToken(addr, username, password);
+                const response = await fetch(`${addr}${endpoint}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Token ' + token,
+                        'X-Extract-Content': items.extractContent || 'false'
+                    },
+                    body: JSON.stringify(data),
+                    signal: controller.signal
                 });
-                throw new Error(`HTTP error! status: ${response.status}`);
+
+                clearTimeout(timeoutId);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const responseData = await response.json();
+                successCallback(responseData);
+            } catch (error) {
+                if (error.name === 'AbortError' && retryCount < MAX_RETRIES) {
+                    console.log(`Request timed out, retrying (${retryCount + 1}/${MAX_RETRIES})...`);
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    return makeRequest(retryCount + 1);
+                }
+                throw error;
+            } finally {
+                clearTimeout(timeoutId);
             }
-            return response.json();
-        })
-        .then(data => {
-            successCallback(data);
-        })
-        .catch(error => {
-            clearTimeout(timeoutId);
-            console.error('Error:', error);
-            let errorMessage = error.name === 'AbortError' ? 
-                chrome.i18n.getMessage('requestTimeout') :
-                chrome.i18n.getMessage('serverConnectionError');
-                
-            chrome.runtime.sendMessage({ 
-                action: "showError",
-                message: errorMessage
-            });
-        });
-    });
+        } catch (error) {
+            console.error('Request failed:', error);
+            // 使用 try-catch 包装消息发送
+            try {
+                chrome.runtime.sendMessage({
+                    action: "showError",
+                    message: error.name === 'AbortError' ? 
+                        chrome.i18n.getMessage('requestTimeout') :
+                        chrome.i18n.getMessage('serverConnectionError')
+                });
+            } catch (e) {
+                console.warn('Failed to send error message:', e);
+            }
+        }
+    };
+
+    makeRequest();
 }
 
 function getBookmarkPath(bookmarkId, callback) {
