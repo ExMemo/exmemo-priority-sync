@@ -84,7 +84,9 @@ function checkAndCreateWatchLaterFolder(callback) {
                 callback(watchLaterFolder.id);
             }
         } else {
-            console.error('Bookmarks bar not found');
+                    console.error('Bookmarks bar not found');
+                }
+            });
         }
 
 // Get specified bookmark and send it to server

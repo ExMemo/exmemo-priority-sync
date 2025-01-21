@@ -97,10 +97,11 @@ chrome.bookmarks.onCreated.addListener((id, bookmark, action='create') => {
     const message = chrome.i18n.getMessage('syncMessage');
     const buttons = [
         { title: chrome.i18n.getMessage('collect_text') }, 
-        { title: chrome.i18n.getMessage('todo_text') } 
+        { title: chrome.i18n.getMessage('todo_text') }
     ];
     
-    showNotification(title, message, true, buttons, id, action);
+    // 将 autoClose 参数改为 false
+    showNotification(title, message, false, buttons, id, action);
     console.log("onCreated:", id, message, buttons, action);
 });
 
