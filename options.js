@@ -6,34 +6,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const passwordInput = document.getElementById('password');
     const extractContentInput = document.getElementById('extractContent');
     const saveButton = document.getElementById('save');
-    /* 
-    const llmApiKeyInput = document.getElementById('llmApiKey');
-    const llmBaseUrlInput = document.getElementById('llmBaseUrl');
-    const llmModelInput = document.getElementById('llmModel');
-    const truncateContentInput = document.getElementById('truncateContent');
-    const maxContentLengthInput = document.getElementById('maxContentLength');
-    const truncateModeSelect = document.getElementById('truncateMode');
-    const autoTagInput = document.getElementById('autoTag');
-
-    const contentOptionsDiv = document.getElementById('contentOptions');
-    const truncateOptionsDiv = document.getElementById('truncateOptions');
-
-    function updateContentOptions() {
-        if (extractContentInput.checked) {
-            contentOptionsDiv.classList.add('visible');
-        } else {
-            contentOptionsDiv.classList.remove('visible');
-        }
-    }
-
-    function updateTruncateOptions() {
-        if (truncateContentInput.checked) {
-            truncateOptionsDiv.classList.add('visible');
-        } else {
-            truncateOptionsDiv.classList.remove('visible');
-        }
-    }
-    */
 
     const i18nElements = {
         'appName': 'appName',
@@ -42,7 +14,8 @@ document.addEventListener('DOMContentLoaded', () => {
         'username_text': 'username_text',
         'password_text': 'password_text',
         'saveSettings': 'saveSettings',
-        'extractContent_text': 'extractContent_text'
+        'extractContent_text': 'extractContent_text',
+        'extractContent_hint': 'extractContent_hint'
     };
 
     Object.entries(i18nElements).forEach(([elementId, messageKey]) => {
@@ -61,16 +34,6 @@ document.addEventListener('DOMContentLoaded', () => {
         usernameInput.value = items.username || 'guest';
         passwordInput.value = items.password || 'guest';
         extractContentInput.checked = items.extractContent ?? false;
-        /* 
-        llmApiKeyInput.value = items.llmApiKey || '';
-        llmBaseUrlInput.value = items.llmBaseUrl || 'https://api.openai.com/v1';
-        llmModelInput.value = items.llmModel || 'gpt-4o-mini';
-        truncateContentInput.checked = items.truncateContent ?? true;
-        maxContentLengthInput.value = items.maxContentLength ?? 1000;
-        truncateModeSelect.value = items.truncateMode ?? 'first_para';
-        updateContentOptions();
-        updateTruncateOptions();
-        */
     });
 
 

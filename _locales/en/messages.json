@@ -51,7 +51,10 @@
         "message": "Bookmarks Bar"
     },
     "extractContent_text": {
-        "message": "Extract Page Content (Enabling this option will slow down synchronization and consume more LLM tokens for extracting summaries and tags from truncated content.)"
+        "message": "Extract Content"
+    },
+    "extractContent_hint": {
+        "message": "(Enabling this option will extract webpage content, which may slow down synchronization.)"
     },
     "truncateContent": {
         "message": "Truncate Long Content"

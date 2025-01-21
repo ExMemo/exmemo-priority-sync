@@ -54,7 +54,10 @@
         "message": "书签栏"
     },
     "extractContent_text": {
-        "message": "开启此选项将提取摘要和标签，可能导致同步速度变慢，并消耗更多 LLM Token 来处理截断的内容。"
+        "message": "是否提取内容"
+    },
+    "extractContent_hint": {
+        "message": "(开启此选项将提取网页内容，可能导致同步速度变慢。)"
     },
     "basicSettings": {
         "message": "基本设置"
