@@ -201,8 +201,9 @@ function getToken(addr, username, password) {
 }
 
 function sendRequestToServer(endpoint, data, successCallback) {
-    const TIMEOUT = 30000;
+    const TIMEOUT = 60000;
     const MAX_RETRIES = 3;
+    const RETRY_DELAY = 5000;
     
     const makeRequest = async (retryCount = 0) => {
         try {
@@ -240,7 +241,7 @@ function sendRequestToServer(endpoint, data, successCallback) {
             } catch (error) {
                 if (error.name === 'AbortError' && retryCount < MAX_RETRIES) {
                     console.log(`Request timed out, retrying (${retryCount + 1}/${MAX_RETRIES})...`);
-                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    await new Promise(resolve => setTimeout(resolve, RETRY_DELAY * (retryCount + 1)));
                     return makeRequest(retryCount + 1);
                 }
                 throw error;
@@ -249,7 +250,12 @@ function sendRequestToServer(endpoint, data, successCallback) {
             }
         } catch (error) {
             console.error('Request failed:', error);
-            // 使用 try-catch 包装消息发送
+            if (retryCount < MAX_RETRIES) {
+                console.log(`Request failed, retrying (${retryCount + 1}/${MAX_RETRIES})...`);
+                await new Promise(resolve => setTimeout(resolve, RETRY_DELAY * (retryCount + 1)));
+                return makeRequest(retryCount + 1);
+            }
+            
             try {
                 chrome.runtime.sendMessage({
                     action: "showError",
@@ -353,12 +359,9 @@ function finishProgressNotification(success = true) {
     if (!syncProgress.isBatchSync) return;
     
     const finalStatus = success ? 'Success' : 'Failed';
-    const endMsg = success ? 
-        chrome.i18n.getMessage('syncStatus', [
-            String(syncProgress.processed),
-            String(syncProgress.total)
-        ]) :
-        chrome.i18n.getMessage('syncFailed');
+    const endMsg = success 
+        ? chrome.i18n.getMessage('syncStatus')
+        : chrome.i18n.getMessage('syncFailed');
     
     console.log(`[Sync End] Sync completed with status: ${finalStatus}`);
     console.log(`[Sync Summary] Total: ${syncProgress.total}, Processed: ${syncProgress.processed}, Success Rate: ${Math.round((syncProgress.processed/syncProgress.total) * 100)}%`);
@@ -410,7 +413,8 @@ async function sendBookmarksToServer(bookmarks, status = 'todo', action='create'
                 title: deleteBookmark.title,
                 path: '',
                 status: status,
-                action: 'delete'
+                action: 'delete',
+                is_batch: false
             };
             
             sendRequestToServer('/api/bookmarks/', [processedBookmark], (data) => {
@@ -484,8 +488,14 @@ async function sendBookmarksToServer(bookmarks, status = 'todo', action='create'
             throw new Error('No valid bookmarks found after filtering');
         }
 
+        // add is batch for each bookmark
+        const isBatch = validBookmarks.length > 1;
+        validBookmarks.forEach(bookmark => {
+            bookmark.is_batch = isBatch;
+        });
+
         // batch sync
-        if (validBookmarks.length > 1) {
+        if (isBatch) {
             await startProgressNotification(validBookmarks.length);
             const batches = [];
             

@@ -141,7 +141,7 @@
         "message": "完成"
     },
     "syncStatus": {
-        "message": "同步完成 [%1$s/%2$s]"
+        "message": "同步完成"
     },
     "syncFailed": {
         "message": "同步失败"
