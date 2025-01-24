@@ -16,14 +16,18 @@ The system architecture comprises a database, backend, and multiple frontends. D
 
 - **Enhanced Synchronization Mechanism**: 
   - For first-time users, a simple click on the "Sync" button facilitates the effortless migration of all bookmark data to ExMemo's cloud-based database, enabling bulk import with a single action.
-  - The system employs a sophisticated real-time monitoring mechanism that adeptly captures any changes to bookmarks, including additions, deletions, or modifications. This triggers an automatic synchronization process, ensuring that data remains perpetually up-to-date.
+  - The system employs a sophisticated real-time monitoring mechanism that automatically triggers synchronization when bookmarks are added, deleted, or moved to new locations.
+  - Currently implements one-way communication from browser bookmarks to database.
 
-- **Bookmark Management**: 
-  - Users can efficiently categorize bookmarks into "To Read" and "Favorites" states, thereby distinguishing between importance and priority levels.
-  - Bookmarks designated as "To Read" are intelligently archived into a dedicated "To Read" folder. If the folder does not already exist, the system automatically generates it, ensuring a structured and layered approach to reading plans.
+- **Bookmark Priority System**: 
+  - Users can efficiently categorize bookmarks into "To Read" and "Favorites" states, with favorites representing higher priority items.
+  - Bookmarks designated as "To Read" are intelligently archived into a dedicated "To Read" folder. If the folder does not already exist, the system automatically generates it.
 
 - **Link Health Checker**: 
-  - The system features an advanced link health checker that conducts real-time scans to identify and flag broken or invalid links within the database. This allows for the precise removal of obsolete information, maintaining the integrity and relevance of the bookmark collection.
+  - The system automatically identifies and flags invalid links within the database, maintaining data integrity.
+
+- **Browse Count Tracking**:
+  - Automatically tracks and records the number of times each bookmark is visited.
 
 ## 3. Installation and Configuration
 
