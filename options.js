@@ -4,7 +4,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const ipInput = document.getElementById('addr');
     const usernameInput = document.getElementById('username');
     const passwordInput = document.getElementById('password');
-    const extractContentInput = document.getElementById('extractContent');
     const saveButton = document.getElementById('save');
 
     const i18nElements = {
@@ -14,8 +13,6 @@ document.addEventListener('DOMContentLoaded', () => {
         'username_text': 'username_text',
         'password_text': 'password_text',
         'saveSettings': 'saveSettings',
-        'extractContent_text': 'extractContent_text',
-        'extractContent_hint': 'extractContent_hint'
     };
 
     Object.entries(i18nElements).forEach(([elementId, messageKey]) => {
@@ -26,23 +23,19 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     chrome.storage.sync.get([
-        'addr', 'username', 'password',
-        'extractContent'
+        'addr', 'username', 'password'
     ], (items) => {
         console.log('Loaded settings:', items);
         ipInput.value = items.addr || 'http://localhost:8005';
         usernameInput.value = items.username || 'guest';
         passwordInput.value = items.password || 'guest';
-        extractContentInput.checked = items.extractContent ?? false;
     });
-
 
     saveButton.addEventListener('click', async () => {
         const settings = {
             addr: ipInput.value.trim(),
             username: usernameInput.value.trim(),
-            password: passwordInput.value,
-            extractContent: extractContentInput.checked
+            password: passwordInput.value
         };
 
         try {
@@ -66,12 +59,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     chrome.storage.sync.get([
-        'addr', 'username', 'password',
-        'extractContent'
+        'addr', 'username', 'password'
     ], (items) => {
         ipInput.value = items.addr || 'http://localhost:8005';
         usernameInput.value = items.username || 'guest';
         passwordInput.value = items.password || 'guest';
-        extractContentInput.checked = items.extractContent ?? false;
     });
 });

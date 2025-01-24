@@ -50,12 +50,6 @@
     "bookmarksbar": {
         "message": "Bookmarks Bar"
     },
-    "extractContent_text": {
-        "message": "Extract Content"
-    },
-    "extractContent_hint": {
-        "message": "(Enabling this option will extract webpage content, which may slow down synchronization.)"
-    },
     "truncateContent": {
         "message": "Truncate Long Content"
     },

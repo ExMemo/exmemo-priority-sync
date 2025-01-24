@@ -207,7 +207,7 @@ function sendRequestToServer(endpoint, data, successCallback) {
     
     const makeRequest = async (retryCount = 0) => {
         try {
-            const items = await chrome.storage.sync.get(['addr', 'username', 'password', 'extractContent']);
+            const items = await chrome.storage.sync.get(['addr', 'username', 'password']);
             const addr = items.addr || 'http://localhost:8005';
             const username = items.username || 'guest';
             const password = items.password || 'guest';
@@ -223,8 +223,7 @@ function sendRequestToServer(endpoint, data, successCallback) {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': 'Token ' + token,
-                        'X-Extract-Content': items.extractContent || 'false'
+                        'Authorization': 'Token ' + token
                     },
                     body: JSON.stringify(data),
                     signal: controller.signal

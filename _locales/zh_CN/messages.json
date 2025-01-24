@@ -53,12 +53,6 @@
     "bookmarksbar": {
         "message": "书签栏"
     },
-    "extractContent_text": {
-        "message": "是否提取内容"
-    },
-    "extractContent_hint": {
-        "message": "(开启此选项将提取网页内容，可能导致同步速度变慢。)"
-    },
     "basicSettings": {
         "message": "基本设置"
     },
